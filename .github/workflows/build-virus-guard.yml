@@ -49,3 +49,15 @@ jobs:
           name: virus-guard-apk
           path: android-project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+      - name: Fix KSP CI issue
+        working-directory: android-project
+    
+        run: |
+                      - name: Fix KSP CI issue
+        working-directory: android-project
+        run: |
+          sed -i 's/googleDevtoolsKsp = "2.3.5"/googleDevtoolsKsp = "2.3.6"/' gradle/libs.versions.toml
+      - name: Build APK
+        working-directory: android-project
+        run: |
+          gradle assembleDebug --stacktrace      
