@@ -1,4 +1,5 @@
-      name: Build Virus Guard APK
+
+name: Build Virus Guard APK
 
 on:
   workflow_dispatch:
@@ -19,26 +20,17 @@ jobs:
       - name: Find Android project
         run: |
           PROJECT_DIR=$(find android-project -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" \) -printf '%h\n' | head -1)
-
           if [ -z "$PROJECT_DIR" ]; then
-            echo "Error: Android Gradle project not found"
+            echo "Android project not found"
             exit 1
           fi
-
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-          echo "Android project: $PROJECT_DIR"
 
-      - name: Fix KSP CI issue
+      - name: Fix KSP
         run: |
-          KSP_FILE=$(find "$PROJECT_DIR" -type f -name "libs.versions.toml" | head -1)
-
+          KSP_FILE=$(find android-project -type f -name "libs.versions.toml" | head -1)
           if [ -n "$KSP_FILE" ]; then
-            echo "Found version catalog: $KSP_FILE"
             sed -i 's/googleDevtoolsKsp = "2.3.5"/googleDevtoolsKsp = "2.3.6"/' "$KSP_FILE"
-            echo "KSP version check:"
-            grep -n "googleDevtoolsKsp" "$KSP_FILE" || true
-          else
-            echo "libs.versions.toml not found; continuing"
           fi
 
       - name: Set up JDK 17
@@ -50,7 +42,7 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
         with:
-          packages: 'platform-tools'
+          packages: platform-tools
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -60,7 +52,6 @@ jobs:
       - name: Build APK
         run: |
           cd "$PROJECT_DIR"
-          echo "Building from: $(pwd)"
           gradle assembleDebug --stacktrace
 
       - name: Upload APK
