@@ -1,15 +1,15 @@
 name: Build Android APK
 
 on:
-  workflow_dispatch:
+workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04
+build:
+runs-on: ubuntu-24.04
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v6
 
   - name: Setup Java
     uses: actions/setup-java@v5
@@ -21,9 +21,10 @@ jobs:
     uses: android-actions/setup-android@v4
 
   - name: Check ZIP
+    shell: bash
     run: |
       if [ ! -f "./ai-prompt-studio.zip" ]; then
-        echo "ZIP file not found"
+        echo "ERROR: ai-prompt-studio.zip not found in repository root"
         ls -la
         exit 1
       fi
@@ -34,13 +35,16 @@ jobs:
     shell: bash
     run: |
       PROJECT_FILE=$(find android-project -type f -name "settings.gradle.kts" -o -name "settings.gradle" -print -quit)
+
       if [ -z "$PROJECT_FILE" ]; then
-        echo "Android Gradle project not found"
+        echo "ERROR: Android Gradle project not found in ZIP"
         find android-project -maxdepth 4 -type f | head -100
         exit 1
       fi
+
       PROJECT_DIR=$(dirname "$PROJECT_FILE")
       echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+      echo "Android project found: $PROJECT_DIR"
 
   - name: Setup Gradle
     uses: gradle/actions/setup-gradle@v4
@@ -51,6 +55,7 @@ jobs:
     shell: bash
     run: |
       cd "$PROJECT_DIR"
+
       if [ -f "./gradlew" ]; then
         chmod +x ./gradlew
         ./gradlew assembleDebug --no-daemon
