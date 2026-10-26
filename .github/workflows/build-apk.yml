@@ -9,3 +9,59 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Check ZIP
+        shell: bash
+        run: |
+          if [ ! -f "./ai-prompt-studio.zip" ]; then
+            echo "ERROR: ai-prompt-studio.zip not found"
+            ls -la
+            exit 1
+          fi
+          mkdir -p android-project
+          unzip -q "./ai-prompt-studio.zip" -d android-project
+
+      - name: Find Android project
+        shell: bash
+        run: |
+          PROJECT_FILE=$(find android-project -type f \( -name "settings.gradle.kts" -o -name "settings.gradle" \) -print -quit)
+          if [ -z "$PROJECT_FILE" ]; then
+            echo "ERROR: Android Gradle project not found in ZIP"
+            find android-project -maxdepth 4 -type f | head -100
+            exit 1
+          fi
+          PROJECT_DIR=$(dirname "$PROJECT_FILE")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Build APK
+        shell: bash
+        run: |
+          cd "$PROJECT_DIR"
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+            ./gradlew assembleDebug --no-daemon
+          else
+            gradle assembleDebug --no-daemon
+          fi
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AI-Prompt-Studio-APK
+          path: android-project/**/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 7
