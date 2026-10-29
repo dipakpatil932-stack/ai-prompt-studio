@@ -22,13 +22,13 @@ jobs:
       - name: Check ZIP
         shell: bash
         run: |
-          if [ ! -f "./ai-prompt-studio (3).zip" ]; then
+          if [ ! -f "./AIPromptStudio-Android.zip" ]; then
             echo "ERROR: ai-prompt-studio.zip not found"
             ls -la
             exit 1
           fi
           mkdir -p android-project
-          unzip -q "./ai-prompt-studio (3).zip" -d android-project
+          unzip -q "./AIPromptStudio-Android.zip" -d android-project
 
       - name: Find Android project
         shell: bash
