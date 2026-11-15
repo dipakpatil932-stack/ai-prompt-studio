@@ -54,7 +54,7 @@ jobs:
           cd "$PROJECT_DIR"
           if [ -f "./gradlew" ]; then
             chmod +x ./gradlew
-            ./gradlew assembleDebug --no-daemon -Pandroid.injected.signing.store.type=jks
+            ./gradlew assembleDebug --no-daemon
           else
             gradle assembleDebug --no-daemon
           fi
