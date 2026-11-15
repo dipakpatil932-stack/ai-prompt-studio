@@ -62,7 +62,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-            name: Bolo-English-APK
+          name: Bolo-English-APK
           path: android-project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 7 
