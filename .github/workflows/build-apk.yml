@@ -19,7 +19,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
 
-            - name: Check ZIP
+      - name: Check ZIP
         shell: bash
         run: |
           ZIP_FILE="./bolo-english (3).zip"
@@ -62,7 +62,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-         name: Bolo-English-APK
+            name: Bolo-English-APK
           path: android-project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 7
