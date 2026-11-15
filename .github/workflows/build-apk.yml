@@ -19,16 +19,17 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
 
-      - name: Check ZIP
+            - name: Check ZIP
         shell: bash
         run: |
-          if [ ! -f "./AIPromptStudio-Android.zip" ]; then
-            echo "ERROR: ai-prompt-studio.zip not found"
+          ZIP_FILE="./bolo-english (3).zip"
+          if [ ! -f "$ZIP_FILE" ]; then
+            echo "ERROR: Bolo English ZIP not found"
             ls -la
             exit 1
           fi
           mkdir -p android-project
-          unzip -q "./AIPromptStudio-Android.zip" -d android-project
+          unzip -q "$ZIP_FILE" -d android-project
 
       - name: Find Android project
         shell: bash
@@ -61,7 +62,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: AI-Prompt-Studio-APK
+         name: Bolo-English-APK
           path: android-project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 7
